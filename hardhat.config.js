@@ -1,43 +1,55 @@
-require("@nomicfoundation/hardhat-toolbox");
-const fs = require("fs");
-const privateKey = fs.readFileSync("secrete.txt").toString();
 /** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
-  defaultNetwork: "sepolia",
-  networks: {
-    hardhat: {
-      chainId: 4202,
-    },
-    sepolia: {
-      url: "https://rpc.sepolia-api.lisk.com",
-      accounts: [privateKey],
-      gasPrice: 1000000000,
-    },
-    BitTorrent: {
-      url: "https://pre-rpc.bt.io/",
-      accounts: [privateKey],
-      gasPrice: 1000000000,
-    },
-    zkEVMCardonaTestnet: {
-      url: "https://polygon-zkevm-cardona.blockpi.network/v1/rpc/public",
-      accounts: [privateKey],
-      gas: 6000000,
-      gasPrice: 20000000000,
-    },
-    mumbai: {
-      url: "https://rpc-mumbai.maticvigil.com",
-      accounts: [privateKey],
-    },
-    matic: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/2bGIFu-iEnl9RvAOTe1ddZI2gBnuYQGS",
-      accounts: [privateKey],
-    },
-  },
-  solidity: "0.8.24",
-  allowUnlimitedContractSize: true,
-  throwOnTransactionFailures: true,
-  throwOnCallFailures: true,
-  loggingEnabled: true,
-};
 
-// npx hardhat ignition deploy ./ignition/modules/Lock.js --network BitTorrent
+// require("@nomicfoundation/hardhat-toolbox")
+require("dotenv").config()
+
+// require("hardhat-gas-reporter")
+require("@nomiclabs/hardhat-etherscan")
+// require("solidity-coverage")
+require("hardhat-deploy")
+require("@nomiclabs/hardhat-ethers")
+
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL
+const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY
+const BTT_RPC_URL = process.env.BTT_RPC_URL
+const BTT_PRIVATE_KEY = process.env.BTT_PRIVATE_KEY
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
+module.exports = {
+    defaultNetwork: "hardhat",
+    networks: {
+        sepolia: {
+            url: SEPOLIA_RPC_URL,
+            accounts: [SEPOLIA_PRIVATE_KEY],
+            chainId: 11155111,
+            blockConfirmations: 6,
+        },
+        localhost: {
+            url: "http://127.0.0.1:8545/",
+            chainId: 31337,
+        },
+        BitTorrent: {
+            url: BTT_RPC_URL,
+            accounts: [BTT_PRIVATE_KEY],
+            gasPrice: 2000000000,
+            chainId: 1029,
+        },
+        hardhat: {
+            allowUnlimitedContractSize: true,
+            throwOnTransactionFailures: true,
+            throwOnCallFailures: true,
+            loggingEnabled: true,
+        },
+    },
+
+    etherscan: {
+        apiKey: ETHERSCAN_API_KEY,
+    },
+
+    namedAccounts: {
+        deployer: {
+            default: 0,
+        },
+    },
+
+    solidity: "0.8.24",
+}
